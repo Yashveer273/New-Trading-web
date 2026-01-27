@@ -1,0 +1,393 @@
+ 
+    :root {
+      --v-bg: #050608;
+      --v-card: #0d0f14;
+      --v-primary: #2563eb;
+      --v-primary-glow: rgba(37, 99, 235, 0.4);
+      --v-text: #f8fafc;
+      --v-muted: #94a3b8;
+      --v-success: #10b981;
+      --v-border: rgba(255, 255, 255, 0.08);
+      --v-glass: rgba(255, 255, 255, 0.03);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    .v-body {
+      background-color: var(--v-bg);
+      color: var(--v-text);
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      margin: 0;
+      overflow-x: hidden; 
+      line-height: 1.5;
+      width: 100%;
+      position: relative;
+    }
+
+    .v-container {
+    
+
+      width: 100%;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    .v-nav {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 1000;
+      background: rgba(5, 6, 8, 0.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--v-border);
+      height: 72px;
+      display: flex;
+      align-items: center;
+    }
+
+    .v-nav-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+    }
+
+    .v-nav-links {
+      display: none;
+      gap: 32px;
+      align-items: center;
+    }
+
+    @media (min-width: 768px) {
+      .v-nav-links {
+        display: flex;
+      }
+    }
+
+    
+
+    .v-btn-primary {
+      background: var(--v-primary);
+      color: white;
+      padding: 14px 32px;
+      border-radius: 12px;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.3s ease;
+      font-size: 15px;
+      text-decoration: none;
+      justify-content: center;
+    }
+
+    .v-btn-primary:hover {
+      background: #1d4ed8;
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px -10px var(--v-primary-glow);
+    }
+
+    .v-btn-outline {
+      padding: 14px 32px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: white;
+      font-weight: 700;
+      background: transparent;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .v-btn-outline:hover {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .v-title-main {
+      font-size: clamp(36px, 8vw, 72px);
+      line-height: 1.1;
+      font-weight: 900;
+      letter-spacing: -2px;
+      margin-bottom: 24px;
+      background: linear-gradient(180deg, #ffffff 40%, #94a3b8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-transform: uppercase;
+      font-style: italic;
+    }
+
+    .v-hero-section {
+      padding: 160px 24px 80px;
+      text-align: center;
+      position: relative;
+      z-index: 10;
+    }
+
+    .v-hero-text {
+      color: var(--v-muted);
+      font-size: clamp(16px, 2vw, 20px);
+      max-width: 672px;
+      margin: 0 auto 40px;
+      line-height: 1.6;
+    }
+
+    .v-flex-center {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      justify-content: center;
+    }
+
+    @media (min-width: 640px) {
+      .v-flex-center {
+        flex-direction: row;
+      }
+    }
+
+    .v-card-glass {
+      background: var(--v-glass);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--v-border);
+      border-radius: 24px;
+      padding: 32px;
+      transition: all 0.3s ease;
+    }
+
+    .v-card-glass:hover {
+      border-color: rgba(255, 255, 255, 0.2);
+      transform: translateY(-5px);
+    }
+
+    .v-badge {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 6px 12px;
+      border-radius: 99px;
+      background: rgba(37, 99, 235, 0.1);
+      color: var(--v-primary);
+      border: 1px solid rgba(37, 99, 235, 0.2);
+      display: inline-block;
+      margin-bottom: 20px;
+    }
+
+    .v-faq-item {
+      border-bottom: 1px solid var(--v-border);
+      padding: 24px 0;
+      cursor: pointer;
+    }
+
+    .v-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+
+    @media (min-width: 640px) {
+      .v-grid-stats { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (min-width: 1024px) {
+      .v-grid-stats { grid-template-columns: repeat(4, 1fr); }
+      .v-grid-features { grid-template-columns: repeat(3, 1fr); }
+    }
+
+    .v-stat-box {
+      background: linear-gradient(145deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%);
+      border: 1px solid var(--v-border);
+      border-radius: 20px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .v-globe-section {
+      background: linear-gradient(135deg, rgba(37, 99, 235, 0.1), transparent);
+      border: 1px solid var(--v-border);
+      border-radius: 40px;
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 48px;
+      overflow: hidden;
+    }
+
+    @media (min-width: 1024px) {
+      .v-globe-section {
+        flex-direction: row;
+        padding: 64px;
+        align-items: center;
+      }
+    }
+
+    .v-globe-responsive {
+      max-width: 100%;
+      height: auto;
+      opacity: 0.4;
+    }
+
+    .v-social-icon {
+       color: var(--v-muted);
+       transition: color 0.2s;
+    }
+    .v-social-icon:hover {
+       color: var(--v-primary);
+    }
+
+    
+    
+
+    .v-cta-banner {
+      background: var(--v-primary);
+      border-radius: 48px;
+      padding: 80px 24px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .v-menu-mobile {
+      display: block;
+      color: white;
+      cursor: pointer;
+    }
+
+    @media (min-width: 768px) {
+      .v-menu-mobile { display: none; }
+    }
+
+    /* ===== HERO SECTION ===== */
+
+.v-hero {
+  padding: 12px 24px 48px;
+}
+
+.v-hero-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+/* Badge */
+.v-hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  margin-bottom: 24px;
+}
+
+.v-hero-badge span {
+  font-size: 10px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: #3b82f6;
+}
+
+/* Heading */
+.v-hero-title {
+  font-size: clamp(48px, 8vw, 96px);
+  font-weight: 900;
+  font-style: italic;
+  text-transform: uppercase;
+  letter-spacing: -2px;
+  line-height: 0.9;
+  margin-bottom: 24px;
+  background: linear-gradient(180deg, #ffffff 40%, #94a3b8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Paragraph */
+.v-hero-desc {
+  max-width: 672px;
+  margin: 0 auto 32px;
+  color: #94a3b8;
+  font-size: 18px;
+  line-height: 1.6;
+}
+
+/* Buttons Row */
+.v-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+}
+
+/* Primary Button */
+.v-hero-btn {
+  background: #ffffff;
+  color: #000;
+  padding: 16px 32px;
+  border-radius: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.v-hero-btn:hover {
+  background: #e2e8f0;
+}
+
+/* Trust Info */
+.v-hero-trust {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  color: #64748b;
+  font-weight: 700;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+}
+
+.v-hero-avatars {
+  display: flex;
+  margin-left: -8px;
+  cursor: pointer;
+}
+
+/* IMAGE FIT FIX */
+.v-hero-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid #050608;
+  margin-left: -8px;
+
+  object-fit: cover;      /* keeps face centered, no distortion */
+  object-position: center;/* ensures middle of image shows */
+  display: block;         /* removes inline gap */
+  flex-shrink: 0;         /* prevents squishing */
+}
+
+
+/* Responsive */
+@media (max-width: 640px) {
+  .v-hero {
+    padding-top: 100px;
+  }
+
+  .v-hero-title {
+    line-height: 1.05;
+  }
+}
+
+  
