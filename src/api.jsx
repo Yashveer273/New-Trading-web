@@ -11,10 +11,31 @@ export const API_BASE_URL = "http://localhost:5004/";
 export const API_BASE_URL2 = "http://localhost:5004";
 export const SECRET_KEY = "SECRET_KEY12356789";
 
+export const gettoken = () => {
+  const token = Cookies.get("treding");
+  return token;
+};
 
-
-
-
+//  Get user data
+export const getUserData = async () => {
+  const encryptedUser = Cookies.get("tredingUser");
+  if (encryptedUser) {
+    const base64 = encryptedUser.replace(/-/g, "+").replace(/_/g, "/");
+    const decryptedBase64 = CryptoJS.AES.decrypt(base64, SECRET_KEY).toString(
+      CryptoJS.enc.Utf8,
+    );
+    if (!decryptedBase64) return null;
+    const binaryString = atob(decryptedBase64);
+    const bytes = new Uint8Array(binaryString.length);
+    for (let i = 0; i < binaryString.length; i++) {
+      bytes[i] = binaryString.charCodeAt(i);
+    }
+    const decompressed = pako.inflate(bytes, { to: "string" });
+    const data = await JSON.parse(decompressed);
+    const User = data;
+    return User;
+  } else null;
+};
 
 export const tokenVerify = async (token, phone) => {
   const res = await axios.get(`${API_BASE_URL}api/users/tokenVerify`, {
@@ -70,9 +91,9 @@ export const verifyRefCode = async (refCode) => {
   try {
     const res = await axios.get(
       `${API_BASE_URL}api/users/verify-ref`,
-      { params: { refCode } }   // 🔥 query param
+      { params: { refCode } }, // 🔥 query param
     );
-  const data= await res.json();
+    const data = await res.json();
 
     return data.data;
   } catch (err) {
@@ -179,11 +200,30 @@ export const qRrandom = async () => {
 };
 
 export const buyProduct = async (payload) => {
-  const res = await axios.post(`${API_BASE_URL}QR/api/payments`, payload);
+   const token = gettoken();
+    console.log(token);
+
+  if (token) {
+    const data = await getUserData();
+    
+    payload.userId=data._id;
+    console.log(payload);
+  }
+  const res = await axios.post(`${API_BASE_URL}QR/api/buy-stock`, payload);
   return res;
 };
 
 export const rechargeBalence = async (payload) => {
+
+  const token = gettoken();
+    console.log(token);
+
+  if (token) {
+    const data = await getUserData();
+    
+    payload.userId=data._id;
+    console.log(payload);
+  }
   const res = await axios.post(`${API_BASE_URL}QR/api/recharge`, payload);
   return res;
 };
@@ -244,13 +284,12 @@ export const getSocialLinks = async () => {
 };
 // -----------------------------
 export async function fetchStocks() {
-  const res = await fetch(`${API_BASE_URL}api/products` );
+  const res = await fetch(`${API_BASE_URL}api/products`);
   return res.json();
 }
 export async function get_by_id_Stock(id) {
-  const res = await fetch(`${API_BASE_URL}api/products/getProductById?id=${id}`);
- return res.json();
+  const res = await fetch(
+    `${API_BASE_URL}api/products/getProductById?id=${id}`,
+  );
+  return res.json();
 }
-
-
-

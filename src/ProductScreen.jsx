@@ -12,7 +12,7 @@ import "./styles/productscreen.css";
 import Navigation from "./components/Navigation";
 import InvestmentCard from "./components/InvestmentCard";
 import { Footer } from "./components/footer";
-import { fetchStocks, get_by_id_Stock } from "./api";
+import { buyProduct,  fetchStocks, get_by_id_Stock } from "./api";
 
 const MarketTicker = () => {
   const items = [
@@ -74,11 +74,11 @@ const ProductScreen = () => {
       const latestStock = await get_by_id_Stock(stock._id);
       if (latestStock.success) {
         const totalCost = latestStock.product.currentPrice * qty;
-
-        updateStockInState(latestStock.product);
-
+        
         console.log(totalCost);
-        return latestStock;
+      
+        updateStockInState(latestStock.product);
+        await buyProduct({ stockId:stock._id, quantity:qty});
       } else {
         throw new Error(latestStock);
       }
