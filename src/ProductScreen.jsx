@@ -1,26 +1,18 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
-  TrendingUp,
-  TrendingDown,
-  Plus,
-  Minus,
   Search,
-  User,
-  Zap,
   Activity,
   Wallet,
   ShieldCheck,
   BarChart3,
   Award,
-  CheckCircle2,
-  Globe,
   Lock,
 } from "lucide-react";
 import "./styles/productscreen.css";
 import Navigation from "./components/Navigation";
 import InvestmentCard from "./components/InvestmentCard";
 import { Footer } from "./components/footer";
-
+import { fetchStocks, get_by_id_Stock } from "./api";
 
 const MarketTicker = () => {
   const items = [
@@ -35,9 +27,17 @@ const MarketTicker = () => {
       <div className="ticker-track">
         {[...items, ...items, ...items].map((item, i) => (
           <div key={i} className="ticker-item">
-            <span style={{ color: 'white' }}>{item.s}</span>
+            <span style={{ color: "white" }}>{item.s}</span>
             <span>{item.v}</span>
-            <span style={{ color: item.c.startsWith('+') ? 'var(--success)' : 'var(--danger)' }}>{item.c}</span>
+            <span
+              style={{
+                color: item.c.startsWith("+")
+                  ? "var(--success)"
+                  : "var(--danger)",
+              }}
+            >
+              {item.c}
+            </span>
           </div>
         ))}
       </div>
@@ -46,60 +46,55 @@ const MarketTicker = () => {
 };
 const ProductScreen = () => {
   const [search, setSearch] = useState("");
-  const [balance, setBalance] = useState(420500.0);
+  const balance = 420500.0;
 
-  const stocks = [
-    {
-      ticker: "RELIANCE",
-      name: "Reliance Industries",
-      currentPrice: 2945.5,
-      changePercentage: 1.45,
-    },
-    {
-      ticker: "TCS",
-      name: "Tata Consultancy Services",
-      currentPrice: 4120.35,
-      changePercentage: -0.85,
-    },
-    {
-      ticker: "HDFCBANK",
-      name: "HDFC Bank Ltd",
-      currentPrice: 1642.1,
-      changePercentage: 0.65,
-    },
-    {
-      ticker: "INFY",
-      name: "Infosys Limited",
-      currentPrice: 1534.0,
-      changePercentage: 2.1,
-    },
-    {
-      ticker: "ZOMATO",
-      name: "Zomato Limited",
-      currentPrice: 214.2,
-      changePercentage: 4.25,
-    },
-    {
-      ticker: "TATAMOTORS",
-      name: "Tata Motors",
-      currentPrice: 982.5,
-      changePercentage: 1.1,
-    },
-  ];
+  const [stocks, setStocks] = useState([]);
+  const [status, setStatus] = useState(false);
 
-  const filtered = stocks.filter((s) =>
-    s.ticker.toLowerCase().includes(search.toLowerCase()),
-  );
+  const updateStockInState = (updatedStock) => {
+    setStocks((prev) =>
+      prev.map((s) =>
+        s._id === updatedStock._id ? { ...s, ...updatedStock } : s,
+      ),
+    );
+  };
 
-  const handleBuy = (stock, qty) => {
-    setBalance((prev) => prev - stock.currentPrice * qty);
+  useEffect(() => {
+    const fetchStocksFromAPI = async () => {
+      const data = await fetchStocks();
+      console.log(data.products);
+      setStocks(data.products);
+    };
+    fetchStocksFromAPI();
+  }, []);
+
+  const handleBuy = async (stock, qty) => {
+    try {
+      setStatus(true);
+      const latestStock = await get_by_id_Stock(stock._id);
+      if (latestStock.success) {
+        const totalCost = latestStock.product.currentPrice * qty;
+
+        updateStockInState(latestStock.product);
+
+        console.log(totalCost);
+        return latestStock;
+      } else {
+        throw new Error(latestStock);
+      }
+    } catch (err) {
+      console.error("❌ Buy failed", err);
+      throw err;
+    }finally{
+      setStatus(false);
+    }
   };
 
   return (
     <div className="app-container">
       <Navigation />
-    <MarketTicker />
-      {/* Default Account Section (Wallet View) */}
+      <MarketTicker />
+
       <div className="account-summary">
         <div className="account-inner">
           <div className="wallet-stat">
@@ -196,44 +191,55 @@ const ProductScreen = () => {
       </header>
 
       <div className="market-grid">
-        {filtered.map((s, i) => (
-          <InvestmentCard key={i} stock={s} onBuy={handleBuy} />
-        ))}
+        {Array.isArray(stocks) && stocks.length > 0 ? (
+          stocks.map((s) => (
+            <InvestmentCard
+              key={s._id || s.symbol}
+              stock={s}
+              onBuy={handleBuy}
+              Status={status}
+            />
+          ))
+        ) : (
+          <div
+            style={{
+              padding: "40px",
+              textAlign: "center",
+              color: "#94a3b8",
+              fontWeight: 600,
+            }}
+          >
+            No Stocks Available
+          </div>
+        )}
       </div>
-       <section className="trust-grid">
-          <div className="trust-card">
-            <Lock className="stat-icon" style={{ margin: '0 auto' }} />
-            <h4>Zero-Knowledge Security</h4>
-            <p>Your assets are protected by enterprise-grade cold storage and multi-sig protocols.</p>
-          </div>
-          <div className="trust-card">
-            <BarChart3 className="stat-icon" style={{ margin: '0 auto' }} />
-            <h4>High-Frequency Engine</h4>
-            <p>Execute orders with sub-millisecond latency via our direct market access nodes.</p>
-          </div>
-          <div className="trust-card">
-            <Award className="stat-icon" style={{ margin: '0 auto' }} />
-            <h4>Regulatory Compliance</h4>
-            <p>Fully compliant with SEBI guidelines and NSE/BSE reporting standards.</p>
-          </div>
-        </section>
-
-        {/* --- NEW SECTION: COMPLIANCE STRIP --- */}
-        <div className="compliance-strip">
-          <div className="compliance-item">
-            <CheckCircle2 size={16} />
-            SEBI Reg. INZ00012345
-          </div>
-          <div className="compliance-item">
-            <Globe size={16} />
-            Global Edge Network
-          </div>
-          <div className="compliance-item">
-            <Lock size={16} />
-            SIPC Protected
-          </div>
+      <section className="trust-grid">
+        <div className="trust-card">
+          <Lock className="stat-icon" style={{ margin: "0 auto" }} />
+          <h4>Zero-Knowledge Security</h4>
+          <p>
+            Your assets are protected by enterprise-grade cold storage and
+            multi-sig protocols.
+          </p>
         </div>
-        <Footer />
+        <div className="trust-card">
+          <BarChart3 className="stat-icon" style={{ margin: "0 auto" }} />
+          <h4>High-Frequency Engine</h4>
+          <p>
+            Execute orders with sub-millisecond latency via our direct market
+            access nodes.
+          </p>
+        </div>
+        <div className="trust-card">
+          <Award className="stat-icon" style={{ margin: "0 auto" }} />
+          <h4>Regulatory Compliance</h4>
+          <p>
+            Fully compliant with SEBI guidelines and NSE/BSE reporting
+            standards.
+          </p>
+        </div>
+      </section>
+      <Footer />
     </div>
   );
 };

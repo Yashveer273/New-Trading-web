@@ -1,0 +1,132 @@
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+.auth-container {
+  min-height: 100vh;
+  background: #05070a;
+  color: #f0f6fc;
+  display: flex;
+  flex-direction: column;
+  font-family: Inter, sans-serif;
+}
+
+.auth-nav {
+  padding: 24px 60px;
+  border-bottom: 1px solid #1e252e;
+}
+.nav-brand { display: flex; gap: 14px; align-items: center; }
+.brand-title { font-weight: 900; font-size: 22px; }
+.brand-sub { font-size: 10px; color: #484f58; display: block; }
+
+.auth-split-layout { flex: 1; display: flex; flex-wrap: wrap; }
+
+.auth-info-panel {
+  flex: 1;
+  min-width: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60px;
+  border-right: 1px solid #1e252e;
+}
+.auth-hero-text { font-size: 56px; font-weight: 900; }
+.auth-hero-text span { color: #00d2ff; }
+.auth-accent-line {
+  width: 60px;
+  height: 4px;
+  background: #00d2ff;
+  margin: 24px 0;
+}
+.auth-hero-subtext { color: #8b949e; }
+
+.auth-form-panel {
+  flex: 1;
+  min-width: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60px;
+}
+.auth-form-content { width: 100%; max-width: 400px; }
+
+.input-group { margin-bottom: 22px; }
+.input-group label { font-size: 11px; color: #8b949e; margin-bottom: 6px; display: block; }
+
+.input-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  border: 1px solid #1e252e;
+  border-radius: 12px;
+  background: #0a0d12;
+}
+.input-box .icon {
+  position: absolute;
+  left: 14px;
+  color: #8b949e;
+}
+.input-box .prefix {
+  position: absolute;
+  left: 14px;
+  color: #8b949e;
+}
+.input-box input {
+  flex: 1;
+  padding: 14px 14px 14px 42px;
+  background: transparent;
+  border: none;
+  color: #fff;
+}
+
+.main-btn, .otp-btn {
+  width: 100%;
+  padding: 16px;
+  border-radius: 12px;
+  border: none;
+  font-weight: 800;
+  background: #00d2ff;
+  margin-top: 10px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+.link {
+  text-align: right;
+  color: #00d2ff;
+  cursor: pointer;
+  display: inline-block;
+}
+.link:hover { text-decoration: underline; }
+
+.bottom-link {
+  text-align: center;
+  color: #8b949e;
+  margin-top: 30px;
+  font-size: 14px;
+}
+.bottom-link span {
+  color: #fff;
+  cursor: pointer;
+}
+.bottom-link span:hover {
+  text-decoration: underline;
+}
+
+.input-error {
+  border: 1px solid #ff4d4f;
+}
+
+.error-text {
+  color: #ff4d4f;
+  font-size: 12px;
+  margin-top: 4px;
+  display: block;
+}
