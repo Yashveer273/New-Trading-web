@@ -1,16 +1,20 @@
 import { Minus, Plus, TrendingDown, TrendingUp } from "lucide-react";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
-const InvestmentCard = ({ stock, onBuy, status }) => {
+const InvestmentCard = ({ stock, onBuy }) => {
   const [qty, setQty] = useState(1);
   const [buying, setBuying] = useState(false);
 
-  const handleExecute = () => {
-    setBuying(true);
-
-    onBuy(stock, qty);
-    setBuying(false);
-  };
+const handleExecute = async () => { 
+  setBuying(true);
+  try {
+    await onBuy(stock, qty);
+  } catch (error) {
+    console.error(error);
+  } finally {
+    setBuying(false); 
+  }
+};
 
   /* ✅ DB FIELDS */
   const symbol = stock?.symbol || "";
@@ -182,10 +186,10 @@ const InvestmentCard = ({ stock, onBuy, status }) => {
         </p>
       </div>
       {buying ? (
-        <LoaderStatusButton loading={status} text="Processing" />
+        <LoaderStatusButton loading={buying} text="Processing" />
       ) : (
         <button className="execute-btn" onClick={handleExecute}>
-          Execute Buy
+          EXECUTE BUY
         </button>
       )}
 

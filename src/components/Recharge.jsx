@@ -59,8 +59,8 @@ const Recharge = () => {
       {/* Header */}
       <nav className="recharge-nav">
         <div className="nav-content">
-          <button className="icon-btn">
-                     <ArrowLeft size={20} onClick={()=>navigate(-1)} />
+          <button className="icon-btn" onClick={() => navigate(-1)}>
+                     <ArrowLeft size={20} />
           </button>
           <div className="nav-title">
             <h1 className="title-text">Recharge</h1>

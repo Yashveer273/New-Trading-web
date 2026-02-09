@@ -54,6 +54,7 @@ export const sendOtp = async (phone) => {
   const json = await res.json();
   return decryptResponse(json.payload);
 };
+
 export const verifyRegisterOtp = async (phone) => {
   const res = await fetch(`${API_BASE_URL}api/users/verifyRegisterOtp`, {
     method: "POST",
@@ -63,6 +64,7 @@ export const verifyRegisterOtp = async (phone) => {
   const json = await res.json();
   return decryptResponse(json.payload);
 };
+
 export const sendOtpNoCheck = async (phone) => {
   const res = await fetch(`${API_BASE_URL}api/users/sendOtp`, {
     method: "POST",
@@ -73,6 +75,7 @@ export const sendOtpNoCheck = async (phone) => {
 
   return decryptResponse(json.payload);
 };
+
 export const getRandomUPI = async () => {
   try {
     const res = await fetch(`${API_BASE_URL}api/upi/random`, {
@@ -88,6 +91,7 @@ export const getRandomUPI = async () => {
     return { success: false, message: "Network error" };
   }
 };
+
 export const verifyRefCode = async (refCode) => {
   try {
     const res = await axios.get(
@@ -136,6 +140,7 @@ export const handleSendOtp = async (phone) => {
     alert("Error sending OTP");
   }
 };
+
 export const handleVerifyOtp = (otp, generatedOtp) => {
   if (otp == generatedOtp) {
     alert("OTP verified! You can now set new password.");
@@ -143,6 +148,7 @@ export const handleVerifyOtp = (otp, generatedOtp) => {
     alert("Invalid OTP");
   }
 };
+
 export const callForgetPass = async (newPassword, phone) => {
   if (!newPassword) return alert("Enter new password");
   try {
@@ -218,6 +224,7 @@ export const sellProduct = async (payload) => {
   const res = await axios.post(`${API_BASE_URL}QR/api/sell-stock`, payload);
   return res;
 };
+
 export const fetchUserData = async (userId) => {
   try {
     const [accountRes, purchaseRes] = await Promise.all([

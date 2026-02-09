@@ -304,8 +304,8 @@ const App = () => {
 
       {/* Header */}
       <header className="nav-bar">
-        <button className="icon-btn">
-          <ArrowLeft size={20} onClick={()=>navigate(-1)} />
+        <button className="icon-btn" onClick={() => navigate(-1)}>
+          <ArrowLeft size={20} />
         </button>
         <div className="nav-center">
           <span className="nav-brand">Recharge</span>

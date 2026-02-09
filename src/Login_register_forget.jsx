@@ -7,6 +7,7 @@ import {
   TrendingUp,
   TicketCheck,
   ShieldCheck,
+  Zap,
 } from "lucide-react";
 import Cookies from "js-cookie";
 import pako from "pako";
@@ -291,10 +292,11 @@ const Login_register_forget = () => {
     <div className="auth-container">
       <nav className="auth-nav">
         <div className="nav-brand">
-          <TrendingUp size={28} />
+        <div className="logo-icon">
+            <Zap size={20} color="white" />
+          </div>
           <div>
-            <span className="brand-title">VERTEX</span>
-            <span className="brand-sub">CAPITAL HUB</span>
+            <span className="logo-text">VERTEX</span>
           </div>
         </div>
       </nav>
