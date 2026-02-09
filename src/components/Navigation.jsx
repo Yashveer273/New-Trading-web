@@ -152,6 +152,42 @@ const Navigation = () => {
             {link.label}
           </Link>
         ))}
+        <div style={{ borderTop: "1px solid #1f2937", paddingTop: "16px", marginTop: "8px" }}>
+    {user ? (
+      <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+        <Link
+          to="/account"
+          onClick={() => setMobileOpen(false)}
+          style={{ color: "#e5e7eb", fontWeight: 600, textDecoration: "none" }}
+        >
+          ACCOUNT
+        </Link>
+        <button
+          className="v-auth-btn v-logout"
+          onClick={() => {
+            handleAuth();
+            setMobileOpen(false);
+          }}
+          style={{ width: "fit-content" }}
+        >
+          <LogOut size={16} />
+          <span>LOGOUT</span>
+        </button>
+      </div>
+    ) : (
+      <button
+        className="v-auth-btn v-login"
+        onClick={() => {
+          handleAuth();
+          setMobileOpen(false);
+        }}
+        style={{ width: "fit-content" }}
+      >
+        <LogIn size={16} />
+        <span>LOGIN</span>
+      </button>
+    )}
+  </div>
       </div>
     </nav>
   );

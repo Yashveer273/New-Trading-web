@@ -283,6 +283,11 @@
   border: 1px solid rgba(59, 130, 246, 0.2);
   margin-bottom: 24px;
 }
+@media (min-width: 1024px) {
+  .v-hero-badge {
+    margin-top: 80px;
+  }
+}
 
 .v-hero-badge span {
   font-size: 10px;
