@@ -1,27 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./styles/account.css";
 import {
-  Bot,
-  FileText,
-  Cpu,
-  RadioReceiver,
-  UserCheck,
   CheckCircle2,
-  Loader2,
-  ChevronRight,
-  Activity,
-  Check,
-  TrendingUp,
-  TrendingDown,
-  LogOut,
-  LogIn,
   Shield,
-  Zap,
-  Layers,
-  XCircle,
-  Database,
-  Building2,
-  ArrowLeft,
   CreditCard,
   User,
   Smartphone,
@@ -31,112 +12,107 @@ import {
 import Navigation from "./components/Navigation";
 import { Footer } from "./components/footer";
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
-import { getUserData, getUserInfo } from "./api";
+import { fetchUserData, getUserData, getUserInfo, sellProduct } from "./api";
+import AssetPerformanceList from "./AssetPerformanceList";
 
 const Account = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
-
-  const [activeTab, setActiveTab] = useState("active");
-  const [userData, setUserData] = useState({});
-  const [isInitialLoading, setIsInitialLoading] = useState(false);
-  const [toast, setToast] = useState({ show: false, message: "" });
   const navigate = useNavigate();
-  const products = {
-    active: [
-      {
-        id: 1,
-        name: "Nifty Alpha Trading Bot v2.0 Enterprise",
-        price: 4500.0,
-        change: "+12.5%",
-        isProfit: true,
-        icon: Bot,
-        color: "#00d2ff",
-      },
-      {
-        id: 2,
-        name: "Options Mastery Guide Premium",
-        price: 1250.5,
-        change: "-2.4%",
-        isProfit: false,
-        icon: FileText,
-        color: "#f43f5e",
-      },
-      {
-        id: 3,
-        name: "Cold Storage Ledger",
-        price: 8999.0,
-        change: "+5.1%",
-        isProfit: true,
-        icon: Cpu,
-        color: "#eab308",
-      },
-    ],
-    pending: [
-      {
-        id: 4,
-        name: "Intraday Signal Access",
-        price: 2999.0,
-        change: "0.0%",
-        isProfit: true,
-        icon: RadioReceiver,
-        color: "#a855f7",
-      },
-      {
-        id: 6,
-        name: "Quantum Arbitrage License",
-        price: 15400.0,
-        change: "0.0%",
-        isProfit: true,
-        icon: Activity,
-        color: "#f43f5e",
-      },
-    ],
-    sold: [
-      {
-        id: 5,
-        name: "Wealth Management Session",
-        price: 5000.0,
-        change: "+24.8%",
-        isProfit: true,
-        icon: UserCheck,
-        color: "#10b981",
-      },
-    ],
-  };
 
-  const handleTabClick = (tab) => {
-    setActiveTab(tab);
-    if (tab === "pending") {
-      setIsInitialLoading(true);
-      setTimeout(() => setIsInitialLoading(false), 1000);
-    } else {
-      setIsInitialLoading(false);
-    }
-  };
+  // ✅ NEVER NULL — prevents UI crash
+  const [userData, setUserData] = useState({
+    balance: 0,
+    Withdrawal: 0,
+    totalBuy: 0,
+    phone: "",
+    _id: "",
+  });
+
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [purchasesWithStock, setpurchasesWithStock] = useState([]);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [toast, setToast] = useState({ show: false, message: "" });
 
   const showToast = (msg) => {
     setToast({ show: true, message: msg });
     setTimeout(() => setToast({ show: false, message: "" }), 3000);
   };
 
-  const handleAuth = () => {
-    setIsLoggedIn(!isLoggedIn);
-    showToast(isLoggedIn ? "Terminal Disconnected" : "Terminal Authorized");
+  // ✅ SAFE USER FETCH
+  const userdata = async () => {
+    try {
+      const data = await getUserData();
+      if (!data?._id) throw new Error("No user id");
+
+      const userRes = await getUserInfo(data._id);
+      if (!userRes?.data?.success) throw new Error("Unauthorized");
+
+      setIsLoggedIn(true);
+      setUserData({
+        balance: userRes.data.user?.balance ?? 0,
+        Withdrawal: userRes.data.user?.Withdrawal ?? 0,
+        totalBuy: userRes.data.user?.totalBuy ?? 0,
+        phone: userRes.data.user?.phone ?? "",
+        _id: userRes.data.user?._id ?? "",
+      });
+
+      const purchaseRes = await fetchUserData(data._id);
+      setpurchasesWithStock(purchaseRes?.purchases || []);
+    } catch (err) {
+      console.log("User fetch failed:", err.message);
+
+      // 🔥 Keep UI safe
+      setIsLoggedIn(false);
+      setUserData({
+        balance: 0,
+        Withdrawal: 0,
+        totalBuy: 0,
+        phone: "",
+        _id: "",
+      });
+      setpurchasesWithStock([]);
+    }
   };
 
   useEffect(() => {
-    const userdata = async () => {
-      const data = await getUserData();
-      const Userdata = await getUserInfo(data._id);
-      console.log(Userdata);
-      if (Userdata.data.success) {
-        Userdata.data.user;
-        setUserData(Userdata.data.user);
-      }
-    };
     userdata();
   }, []);
+
+  const handleBuy = async (asset, units) => {
+    if (!isLoggedIn || !userData?._id) {
+      showToast("Please login first");
+      navigate("/login");
+      return;
+    }
+
+    try {
+      setIsProcessing(true);
+
+      if (asset.leftStockUnits < 1) {
+        showToast("No stock units available to sell");
+        return;
+      }
+
+      const res = await sellProduct({
+        purchaseId: asset.purchaseId,
+        leftStockUnits: asset.leftStockUnits,
+        stockId: asset.stockId,
+        units,
+        userId: userData._id,
+      });
+
+      if (res?.data?.success) {
+        showToast(res.data.message);
+        await userdata();
+      } else {
+        showToast("Transaction failed");
+      }
+    } catch (err) {
+      console.log(err);
+      showToast("Transaction failed");
+    } finally {
+      setTimeout(() => setIsProcessing(false), 1500);
+    }
+  };
 
   return (
     <div className="v-terminal">
@@ -152,7 +128,9 @@ const Account = () => {
             <div className="v-unit-body">
               <div className="v-big-balance">
                 <span className="v-curr">₹</span>
-                <span className="v-val">{userData.balance??"0"}</span>
+                <span className="v-val">
+                  {isLoggedIn ? userData.balance : "0"}
+                </span>
               </div>
               <div className="v-btn-row">
                 <button
@@ -167,32 +145,36 @@ const Account = () => {
           </div>
 
           <div className="v-unit">
-            <User size={16} className="v-mute" />
             <div className="v-unit-head">
-              <span className="v-unit-label">USER IDENTITY PROFILE</span>
-              <span className="v-unit-label">User Id:- {userData._id??""}</span>
+              <span className="v-unit-label">
+                <User size={16} className="v-mute" /> USER PROFILE
+              </span>
+              <span className="v-unit-label">
+                User Id:- {isLoggedIn ? userData._id : ""}
+              </span>
             </div>
+
             <div className="v-id-grid">
               <div className="v-id-item">
                 <span className="v-id-label">WITHDRAWAL</span>
                 <div className="v-flex-between">
                   <span className="v-id-val">
-                    {isLoggedIn ? `₹${userData.Withdrawal}`
- : "NOT AUTHENTICATED"}
+                    {isLoggedIn ? `₹${userData.Withdrawal}` : "NOT AUTHENTICATED"}
                   </span>
                   <Fingerprint size={14} className="v-text-mute" />
                 </div>
               </div>
+
               <div className="v-id-item">
                 <span className="v-id-label">TOTAL BUY</span>
                 <div className="v-flex-between">
                   <span className="v-id-val">
-                    {isLoggedIn ? `₹${userData.totalBuy}`
- : "0"}
+                    {isLoggedIn ? `₹${userData.totalBuy}` : "0"}
                   </span>
                   <Mail size={14} className="v-text-mute" />
                 </div>
               </div>
+
               <div className="v-id-item">
                 <span className="v-id-label">MOBILE NUMBER</span>
                 <div className="v-flex-between">
@@ -202,6 +184,7 @@ const Account = () => {
                   <Smartphone size={14} className="v-text-mute" />
                 </div>
               </div>
+
               <div
                 className="v-id-item v-clickable-id"
                 onClick={() => isLoggedIn}
@@ -215,46 +198,11 @@ const Account = () => {
             </div>
           </div>
 
-          <div className="v-unit v-assets-unit">
-            <div className="v-tabs">
-              {["active", "pending", "sold"].map((tab) => (
-                <button
-                  key={tab}
-                  onClick={() => handleTabClick(tab)}
-                  className={`v-tab ${activeTab === tab ? "v-active" : ""}`}
-                >
-                  {tab.toUpperCase()}
-                  {activeTab === tab && <div className="v-glow-bar" />}
-                </button>
-              ))}
-            </div>
-
-            <div className="v-assets-body">
-              {isLoggedIn ? (
-                <AssetPerformanceList
-                  assets={products[activeTab]}
-                  type={activeTab}
-                  isInitialLoading={isInitialLoading}
-                  onSell={(n) => showToast(`Executed: ${n}`)}
-                />
-              ) : (
-                <div className="v-lock">
-                  <p>ACCESS RESTRICTED. INITIALIZE LOGIN.</p>
-                  <button
-                    className="v-btn-primary"
-                    style={{
-                      width: "auto",
-                      padding: "12px 40px",
-                      marginTop: "1rem",
-                    }}
-                    onClick={handleAuth}
-                  >
-                    LOGIN
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
+          <AssetPerformanceList
+            purchasesWithStock={purchasesWithStock}
+            onBuy={handleBuy}
+            isProcessing={isProcessing}
+          />
         </div>
       </main>
 
@@ -262,132 +210,10 @@ const Account = () => {
         <CheckCircle2 size={18} />
         <span>{toast.message}</span>
       </div>
+
       <Footer />
     </div>
   );
 };
 
 export default Account;
-
-const AssetPerformanceList = ({ assets, type, onSell, isInitialLoading }) => {
-  const [sellingItems, setSellingItems] = useState({});
-
-  if (isInitialLoading) {
-    return (
-      <div className="v-api-loading">
-        <div className="v-loader-box">
-          <Database size={32} className="v-pulse-icon" />
-          <span className="v-loading-text">RETRIEVING DATA...</span>
-          <div className="v-progress-track">
-            <div className="v-progress-fill"></div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  const handleSellClick = (item) => {
-    if (sellingItems[item.id]) return;
-    setSellingItems((prev) => ({ ...prev, [item.id]: true }));
-
-    setTimeout(() => {
-      onSell(item.name, item.price);
-      setSellingItems((prev) => ({ ...prev, [item.id]: false }));
-    }, 2000);
-  };
-
-  return (
-    <div className="asset-feed">
-      {assets.map((item) => {
-        const isCanceled = item.id === 6;
-
-        return (
-          <div key={item.id} className="asset-node">
-            <div
-              className="node-glitch-line"
-              style={{ background: item.color }}
-            ></div>
-
-            <div className="node-main">
-              <div
-                className="node-icon-wrapper"
-                style={{ border: `1px solid ${item.color}44` }}
-              >
-                <item.icon size={20} style={{ color: item.color }} />
-              </div>
-
-              <div className="node-info">
-                <div className="node-meta">
-                  <span className="node-tag">Trading Type</span>
-                  <span className="node-category" style={{ color: item.color }}>
-                    {type === "pending"
-                      ? "Verification"
-                      : item.isProfit
-                        ? "High Performance"
-                        : "Standard"}
-                  </span>
-                </div>
-                <h4 className="node-title">{item.name}</h4>
-                <div className="node-price-row">
-                  <span className="node-price">
-                    ₹{item.price.toLocaleString("en-IN")}
-                  </span>
-                  {type !== "pending" && (
-                    <div
-                      className={`node-stat ${item.isProfit ? "pos" : "neg"}`}
-                    >
-                      {item.isProfit ? (
-                        <TrendingUp size={12} />
-                      ) : (
-                        <TrendingDown size={12} />
-                      )}
-                      {item.change}
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <div className="node-actions">
-                {type === "active" && (
-                  <button
-                    className={`node-btn sell ${sellingItems[item.id] ? "loading" : ""}`}
-                    onClick={() => handleSellClick(item)}
-                    disabled={sellingItems[item.id]}
-                  >
-                    {sellingItems[item.id] ? (
-                      <Loader2 size={14} className="animate-spin" />
-                    ) : (
-                      "SELL"
-                    )}
-                  </button>
-                )}
-
-                {type === "pending" && (
-                  <div
-                    className={`node-status-badge ${isCanceled ? "status-canceled" : "status-received"}`}
-                  >
-                    {isCanceled ? <XCircle size={14} /> : <Check size={14} />}
-                    <span>{isCanceled ? "CANCELED" : "RECEIVED"}</span>
-                  </div>
-                )}
-
-                {type === "sold" && (
-                  <div className="node-status-badge status-received">
-                    <Check size={14} />
-                    <span>COMPLETED</span>
-                  </div>
-                )}
-
-                {type === "active" && (
-                  <button className="node-details">
-                    <ChevronRight size={18} />
-                  </button>
-                )}
-              </div>
-            </div>
-          </div>
-        );
-      })}
-    </div>
-  );
-};

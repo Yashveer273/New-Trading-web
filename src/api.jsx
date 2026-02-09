@@ -33,6 +33,7 @@ export const getUserData = async () => {
     const decompressed = pako.inflate(bytes, { to: "string" });
     const data = await JSON.parse(decompressed);
     const User = data;
+
     return User;
   } else null;
 };
@@ -200,28 +201,57 @@ export const qRrandom = async () => {
 };
 
 export const buyProduct = async (payload) => {
-   const token = gettoken();
-    console.log(token);
+  const token = gettoken();
+  console.log(token);
 
   if (token) {
     const data = await getUserData();
-    
-    payload.userId=data._id;
+
+    payload.userId = data._id;
     console.log(payload);
   }
   const res = await axios.post(`${API_BASE_URL}QR/api/buy-stock`, payload);
   return res;
 };
 
-export const rechargeBalence = async (payload) => {
+export const sellProduct = async (payload) => {
+  const res = await axios.post(`${API_BASE_URL}QR/api/sell-stock`, payload);
+  return res;
+};
+export const fetchUserData = async (userId) => {
+  try {
+    const [accountRes, purchaseRes] = await Promise.all([
+      axios.get(`${API_BASE_URL}api/users/account_data`, {
+        params: { userId },
+      }),
+      axios
+        .get(`${API_BASE_URL}api/users/purchase`, { params: { userId } })
+        .catch(() => ({ data: { data: { purchases: [] } } })),
+    ]);
 
+    let updatedData = {};
+
+    if (accountRes?.data?.success) {
+      updatedData = {
+        accountData: accountRes.data.data,
+        purchases: purchaseRes?.data?.data?.purchasesWithStock || [],
+      };
+    }
+
+    return updatedData;
+  } catch (error) {
+    console.error("Critical error fetching user data:", error);
+    throw error;
+  }
+};
+export const rechargeBalence = async (payload) => {
   const token = gettoken();
-    console.log(token);
+  console.log(token);
 
   if (token) {
     const data = await getUserData();
-    
-    payload.userId=data._id;
+
+    payload.userId = data._id;
     console.log(payload);
   }
   const res = await axios.post(`${API_BASE_URL}QR/api/recharge`, payload);

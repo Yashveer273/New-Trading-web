@@ -186,6 +186,8 @@ const Login_register_forget = () => {
 
     try {
       setLoading(true);
+      Cookies.remove("treding");
+      Cookies.remove("tredingUser");
       const response = await registerUser({
         phone,
         name,
@@ -215,11 +217,12 @@ const Login_register_forget = () => {
           .replace(/\//g, "_")
           .replace(/=+$/, "");
 
-        // ✅ 6. Store securely
         Cookies.set("treding", response.token, { expires: 7, path: "/" });
         Cookies.set("tredingUser", base64url, { expires: 7, path: "/" });
+
         alert(response.message || "Registered successfully!");
-        navigate("/home");
+
+        setTimeout(() => navigate("/"), 200);
       } else {
         alert(response.message || "Registration failed");
       }
@@ -272,8 +275,6 @@ const Login_register_forget = () => {
         Cookies.set("treding", response.token, { expires: 7, path: "/" });
         Cookies.set("tredingUser", base64url, { expires: 7, path: "/" });
 
-        
-
         alert(response.message || "Login successful");
 
         setTimeout(() => navigate("/"), 200);
@@ -323,14 +324,19 @@ const Login_register_forget = () => {
 
             {view === "login" && (
               <form onSubmit={handleLogin}>
-                <ConsoleInput label="Mobile" onChange={(e) =>
+                <ConsoleInput
+                  label="Mobile"
+                  onChange={(e) =>
                     setPhone(e.target.value.replace(/\D/g, "").slice(0, 10))
-                  } prefix="+91" required />
+                  }
+                  prefix="+91"
+                  required
+                />
                 <ConsoleInput
                   label="Password"
                   type="password"
                   icon={Lock}
-                   onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e) => setPassword(e.target.value)}
                   required
                 />
                 <p
@@ -357,7 +363,6 @@ const Login_register_forget = () => {
               <>
                 <ConsoleInput
                   label="Mobile"
-                  
                   prefix="+91"
                   value={phone}
                   disabled={otpVerified}
