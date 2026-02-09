@@ -1,6 +1,5 @@
 import { Zap, User, Menu, X, LogOut, LogIn } from "lucide-react";
 import { useState, useEffect } from "react";
-
 import { Link, useNavigate } from "react-router-dom";
 import "../styles/productscreen.css";
 import "../styles/home.css";
@@ -152,6 +151,7 @@ const Navigation = () => {
             {link.label}
           </Link>
         ))}
+        // User Actions in Mobile Menu
         <div
           style={{
             borderTop: "1px solid #1f2937",
@@ -201,7 +201,6 @@ const Navigation = () => {
           )}
         </div>
       </div>
-      
     </nav>
   );
 };
