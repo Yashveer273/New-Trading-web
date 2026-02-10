@@ -25,6 +25,9 @@ const Account = () => {
     totalBuy: 0,
     phone: "",
     _id: "",
+    withdrawHistory:[],
+    rechargeHistory:[],
+    totalAmount:{totalRechargeAmount:0}
   });
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -45,7 +48,7 @@ const Account = () => {
 
       const userRes = await getUserInfo(data._id);
       if (!userRes?.data?.success) throw new Error("Unauthorized");
-
+console.log(userRes.data.user.withdrawHistory)
       setIsLoggedIn(true);
       setUserData({
         balance: userRes.data.user?.balance ?? 0,
@@ -53,6 +56,9 @@ const Account = () => {
         totalBuy: userRes.data.user?.totalBuy ?? 0,
         phone: userRes.data.user?.phone ?? "",
         _id: userRes.data.user?._id ?? "",
+        withdrawHistory:userRes.data.user.withdrawHistory,
+        rechargeHistory:userRes.data.user.rechargeHistory,
+        totalAmount:userRes.data.user?.totalAmount?.totalRechargeAmount
       });
 
       const purchaseRes = await fetchUserData(data._id);
@@ -129,7 +135,7 @@ const Account = () => {
               <div className="v-big-balance">
                 <span className="v-curr">₹</span>
                 <span className="v-val">
-                  {isLoggedIn ? userData.balance : "0"}
+                  {isLoggedIn ? Math.floor(userData.balance) : "0"}
                 </span>
               </div>
               <div className="v-btn-row">
@@ -139,7 +145,9 @@ const Account = () => {
                 >
                   DEPOSIT
                 </button>
-                <button className="v-btn-dark">WITHDRAW</button>
+                 
+                <button className="v-btn-dark" onClick={() =>isLoggedIn && navigate("/withdrawHistory",{state:userData?.withdrawHistory})} >Withdrawal History</button>
+                <button className="v-btn-dark" onClick={()=>isLoggedIn&&navigate("/RechargeHistory",{state:{data:userData.rechargeHistory,totalAmount:userData?.totalAmount?.totalRechargeAmount}})} >Recharge History</button>
               </div>
             </div>
           </div>
@@ -187,11 +195,11 @@ const Account = () => {
 
               <div
                 className="v-id-item v-clickable-id"
-                onClick={() => isLoggedIn}
+                onClick={() => isLoggedIn && navigate("/Withdraw")}
               >
                 <span className="v-id-label">Account</span>
                 <div className="v-flex-between">
-                  <span className=" v-cyan">My Portfolio</span>
+                  <span className=" v-cyan">WITHDRAWAL</span>
                   <CreditCard size={14} className="v-cyan" />
                 </div>
               </div>

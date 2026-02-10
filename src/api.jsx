@@ -330,3 +330,4 @@ export async function get_by_id_Stock(id) {
   );
   return res.json();
 }
+

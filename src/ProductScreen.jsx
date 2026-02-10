@@ -46,7 +46,7 @@ const MarketTicker = () => {
 };
 const ProductScreen = () => {
   const [search, setSearch] = useState("");
-  const balance = 420500.0;
+
 
   const [stocks, setStocks] = useState([]);
   const [status, setStatus] = useState(false);
@@ -95,47 +95,6 @@ const ProductScreen = () => {
       <Navigation />
       <MarketTicker />
 
-      <div className="account-summary">
-        <div className="account-inner">
-          <div className="wallet-stat">
-            <div className="stat-icon">
-              <Wallet size={24} />
-            </div>
-            <div>
-              <p className="label-xs">Available Margin</p>
-              <p style={{ fontSize: "24px", fontWeight: 900, color: "white" }}>
-                ₹{balance.toLocaleString("en-IN", { minimumFractionDigits: 2 })}
-              </p>
-            </div>
-          </div>
-
-          <div
-            style={{
-              height: "40px",
-              width: "1px",
-              background: "var(--border)",
-            }}
-          />
-
-          <div className="wallet-stat">
-            <div
-              className="stat-icon"
-              style={{
-                background: "rgba(16, 185, 129, 0.1)",
-                color: "var(--success)",
-              }}
-            >
-              <ShieldCheck size={24} />
-            </div>
-            <div>
-              <p className="label-xs">Account Status</p>
-              <p style={{ fontSize: "14px", fontWeight: 900, color: "white" }}>
-                Institutional Verified
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
 
       <header className="header-section">
         <div

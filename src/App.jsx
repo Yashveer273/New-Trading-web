@@ -6,6 +6,9 @@ import Account from './account';
 import Login_register_forget from './Login_register_forget';
 import Recharge from './components/Recharge';
 import Pay from './components/pay';
+import Withdraw from './Withdraw';
+import WithdrawalHistory from './withdrawHistory';
+import RechargeHistory from './RechargeHistory';
 
 
 
@@ -17,6 +20,9 @@ export default function App() {
         {/* This sets ProductScreen to the root URL (/) */}
         <Route path="/Market" element={<ProductScreen />} />
         <Route path="/" element={<Home />} />
+        <Route path="/Withdraw" element={<Withdraw />} />
+        <Route path="/withdrawHistory" element={<WithdrawalHistory />} />
+          <Route path="/RechargeHistory" element={<RechargeHistory/>} />
        
         <Route path="/account" element={<Account />} />
         <Route path="/auth" element={<Login_register_forget />} />
