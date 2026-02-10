@@ -5,10 +5,10 @@ import Cookies from "js-cookie";
 import CryptoJS from "crypto-js";
 import pako from "pako";
 
-// export const API_BASE_URL = "https://bdgwin.com.co/";
-// export const API_BASE_URL2 = "https://bdgwin.com.co";
-export const API_BASE_URL = "http://localhost:5004/";
-export const API_BASE_URL2 = "http://localhost:5004";
+export const API_BASE_URL = "https://tradingback.online/";
+export const API_BASE_URL2 = "https://tradingback.online";
+// export const API_BASE_URL = "http://localhost:5004/";
+// export const API_BASE_URL2 = "http://localhost:5004";
 export const SECRET_KEY = "SECRET_KEY12356789";
 
 export const gettoken = () => {
