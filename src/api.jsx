@@ -11,7 +11,7 @@ export const API_BASE_URL2 = "https://tradingback.online";
 // export const API_BASE_URL2 = "http://localhost:5004";
 export const SECRET_KEY = "SECRET_KEY12356789";
 
-export const gettoken = () => {
+export const gettoken = () => { 
   const token = Cookies.get("treding");
   return token;
 };
