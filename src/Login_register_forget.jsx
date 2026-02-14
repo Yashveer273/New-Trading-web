@@ -221,10 +221,11 @@ const Login_register_forget = () => {
         Cookies.set("treding", response.token, { expires: 7, path: "/" });
         Cookies.set("tredingUser", base64url, { expires: 7, path: "/" });
 
-        alert(response.message || "Registered successfully!");
+        alert(response.message);
 
         setTimeout(() => navigate("/"), 200);
       } else {
+        
         alert(response.message || "Registration failed");
       }
     } catch (err) {
@@ -292,7 +293,7 @@ const Login_register_forget = () => {
     <div className="auth-container">
       <nav className="auth-nav">
         <div className="nav-brand">
-        <div className="logo-icon">
+          <div className="logo-icon">
             <Zap size={20} color="white" />
           </div>
           <div>
