@@ -91,7 +91,7 @@ const ProductScreen = () => {
   };
 
   return (
-    <div className="app-container">
+    <>
       <Navigation />
       <MarketTicker />
 
@@ -199,7 +199,7 @@ const ProductScreen = () => {
         </div>
       </section>
       <Footer />
-    </div>
+    </>
   );
 };
 
