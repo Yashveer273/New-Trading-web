@@ -9,6 +9,9 @@ export const API_BASE_URL = "https://tradingback.online/";
 export const API_BASE_URL2 = "https://tradingback.online";
 // export const API_BASE_URL = "http://localhost:5004/";
 // export const API_BASE_URL2 = "http://localhost:5004";
+
+
+
 export const SECRET_KEY = "SECRET_KEY12356789";
 
 export const gettoken = () => { 
@@ -242,6 +245,7 @@ export const fetchUserData = async (userId) => {
       updatedData = {
         accountData: accountRes.data.data,
         purchases: purchaseRes?.data?.data?.purchasesWithStock || [],
+        soldStockHistory:purchaseRes?.data?.data?.soldStockHistory||[],
       };
     }
 

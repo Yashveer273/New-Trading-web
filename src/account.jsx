@@ -32,6 +32,7 @@ const Account = () => {
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [purchasesWithStock, setpurchasesWithStock] = useState([]);
+  const [SoldStock, setSoldStock] = useState([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [toast, setToast] = useState({ show: false, message: "" });
 
@@ -59,9 +60,12 @@ console.log(userRes.data.user.withdrawHistory)
         withdrawHistory:userRes.data.user.withdrawHistory,
         rechargeHistory:userRes.data.user.rechargeHistory,
         totalAmount:userRes.data.user?.totalAmount?.totalRechargeAmount
+        
+
       });
 
       const purchaseRes = await fetchUserData(data._id);
+       setSoldStock(purchaseRes.soldStockHistory||[]);
       setpurchasesWithStock(purchaseRes?.purchases || []);
     } catch (err) {
       console.log("User fetch failed:", err.message);
@@ -75,6 +79,7 @@ console.log(userRes.data.user.withdrawHistory)
         phone: "",
         _id: "",
       });
+      setSoldStock([]);
       setpurchasesWithStock([]);
     }
   };
@@ -167,7 +172,8 @@ console.log(userRes.data.user.withdrawHistory)
                 <span className="v-id-label">WITHDRAWAL</span>
                 <div className="v-flex-between">
                   <span className="v-id-val">
-                    {isLoggedIn ? `₹${userData.Withdrawal}` : "NOT AUTHENTICATED"}
+                    {isLoggedIn ? `₹${Math.floor(userData.Withdrawal)}` : "NOT AUTHENTICATED"}
+
                   </span>
                   <Fingerprint size={14} className="v-text-mute" />
                 </div>
@@ -177,7 +183,9 @@ console.log(userRes.data.user.withdrawHistory)
                 <span className="v-id-label">TOTAL BUY</span>
                 <div className="v-flex-between">
                   <span className="v-id-val">
-                    {isLoggedIn ? `₹${userData.totalBuy}` : "0"}
+                    
+                    {isLoggedIn ? `₹${Math.floor(userData.totalBuy)}` : "NOT AUTHENTICATED"}
+
                   </span>
                   <Mail size={14} className="v-text-mute" />
                 </div>
@@ -208,6 +216,7 @@ console.log(userRes.data.user.withdrawHistory)
 
           <AssetPerformanceList
             purchasesWithStock={purchasesWithStock}
+            SoldStock={SoldStock}
             onBuy={handleBuy}
             isProcessing={isProcessing}
           />
