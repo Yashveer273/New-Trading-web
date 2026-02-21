@@ -1,7 +1,7 @@
  import React from 'react';
  import "../styles/footer.css"
  import { 
-  Zap, Github, Twitter, Linkedin
+ Github, Twitter, Linkedin
 } from 'lucide-react';
  export const Footer = () => (
   <footer className="site-footer">
@@ -10,9 +10,9 @@
       <div className="footer-brand">
         <div className="logo-section" style={{ marginBottom: '20px' }}>
           <div className="logo-icon">
-            <Zap size={18} color="white" fill="currentColor" />
+       <img src="/logo.jpeg" height={30} alt="logo"/>
           </div>
-          <span className="logo-text" style={{ fontSize: '18px' }}>Vertex</span>
+          <span className="logo-text" style={{ fontSize: '18px' }}>Adani CluxTrade</span>
         </div>
         <p style={{ color: 'var(--text-muted)', fontSize: '14px', lineHeight: '1.6', maxWidth: '320px' }}>
           India's leading institutional gateway for equity derivatives and high-frequency order routing. Built for professional liquidity.
@@ -48,7 +48,7 @@
     <div className="footer-bottom">
       <div className="footer-bottom-inner">
         <p style={{ fontSize: '10px', fontWeight: '800', color: '#475569', textTransform: 'uppercase', letterSpacing: '2px' }}>
-          © 2026 Vertex Digital Securities Infrastructure • NSE/BSE Registered
+          © 2026 Adani CluxTrade Digital Securities Infrastructure • NSE/BSE Registered
         </p>
         <div style={{ display: 'flex', gap: '20px' }}>
           <span className="label-xs" style={{ marginBottom: 0 }}>AES-256 Encrypted</span>

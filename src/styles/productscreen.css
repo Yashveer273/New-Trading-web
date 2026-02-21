@@ -62,8 +62,8 @@
  .logo-icon {
    width: 36px;
    height: 36px;
-   background-color: var(--primary);
-   border-radius: 10px;
+   /* background-color: var(--primary); */
+   /* border-radius: 10px; */
    display: flex;
    align-items: center;
    justify-content: center;

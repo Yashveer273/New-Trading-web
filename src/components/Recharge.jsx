@@ -12,7 +12,7 @@ import {
 import { Footer } from './footer';
 
 /**
- * VERTEX RECHARGE COMPONENT
+ * Adani CluxTrade RECHARGE COMPONENT
  * Refined Blue-Themed Financial Interface
  */
 

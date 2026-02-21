@@ -142,7 +142,7 @@ const HomepageCard = () => {
       <div style={{ paddingTop: '20px', width: '100%', display: 'flex', alignItems: 'center', gap: '20px', opacity: 0.2 }}>
         <Activity size={16} />
         <span style={{ fontSize: '10px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.4em' }}>
-          System Online • Vertex Engine v4.0.1
+          System Online • Adani CluxTrade Engine v4.0.1
         </span>
       </div>
     </div>

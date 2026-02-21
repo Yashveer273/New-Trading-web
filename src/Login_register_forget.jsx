@@ -4,10 +4,10 @@ import {
   ChevronRight,
   User,
   Lock,
-  TrendingUp,
+  
   TicketCheck,
   ShieldCheck,
-  Zap,
+  
 } from "lucide-react";
 import Cookies from "js-cookie";
 import pako from "pako";
@@ -294,10 +294,10 @@ const Login_register_forget = () => {
       <nav className="auth-nav">
         <div className="nav-brand">
           <div className="logo-icon">
-            <Zap size={20} color="white" />
+            <img src="/logo.jpeg" height={30} alt="logo"/>
           </div>
           <div>
-            <span className="logo-text">VERTEX</span>
+            <span className="logo-text">Adani CluxTrade</span>
           </div>
         </div>
       </nav>

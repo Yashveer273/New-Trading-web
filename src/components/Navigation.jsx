@@ -1,4 +1,4 @@
-import { Zap, User, Menu, X, LogOut, LogIn } from "lucide-react";
+import {  Menu, X, LogOut, LogIn } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../styles/productscreen.css";
@@ -24,7 +24,7 @@ const Navigation = () => {
   const navLinks = [
     { label: "Home", path: "/" },
     { label: "Markets", path: "/Market" },
-    { label: "About", path: "/" },
+ 
   ];
   const handleAuth = () => {
     if (user) {
@@ -42,9 +42,10 @@ const Navigation = () => {
         {/* Logo */}
         <Link to="/" className="">
           <div className="logo-icon">
-            <Zap size={20} color="white" />
+
+            <img src="/logo.jpeg" height={30} alt="logo"/>
           </div>
-          <span className="logo-text">Vertex</span>
+          <span className="logo-text">Adani CluxTrade</span>
         </Link>
 
         {/* Desktop Links */}

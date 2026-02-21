@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { 
-  Zap, Activity, Globe, CheckCircle2, 
+   Activity, Globe, CheckCircle2, 
   ChevronRight, ArrowRight, 
   TrendingUp, Smartphone,  Menu, X,
   Shield, HelpCircle, 
@@ -42,7 +42,7 @@ const Home = () => {
 
     <p className="v-hero-desc">
       The world's most intuitive trading platform. Whether you're buying your
-      first Bitcoin or managing a professional portfolio, Vertex gives you the edge.
+      first Bitcoin or managing a professional portfolio, Adani CluxTrade gives you the edge.
     </p>
 
     <div className="v-hero-actions">
@@ -145,8 +145,8 @@ const Home = () => {
             <HelpCircle style={{ color: '#3b82f6', marginBottom: '16px' }} size={40} />
             <h2 style={{ fontSize: '30px', fontWeight: 900, fontStyle: 'italic', textTransform: 'uppercase' }}>Common Questions</h2>
           </div>
-          {[{ q: "How do I start trading on Vertex?", a: "Getting started is simple. Create an account, verify your identity, deposit funds using your preferred method, and you can start trading in minutes." },
-            { q: "What types of assets can I trade?", a: "Vertex offers a diverse range of assets including Stocks, Commodities, Currencies, and Indices from all major global exchanges." },
+          {[{ q: "How do I start trading on Adani CluxTrade?", a: "Getting started is simple. Create an account, verify your identity, deposit funds using your preferred method, and you can start trading in minutes." },
+            { q: "What types of assets can I trade?", a: "Adani CluxTrade offers a diverse range of assets including Stocks, Commodities, Currencies, and Indices from all major global exchanges." },
             { q: "Is my personal data and money safe?", a: "Absolutely. We use end-to-end encryption, two-factor authentication (2FA), and keep the majority of assets in secure offline storage." }
           ].map((item, idx) => (
             <div key={idx} className="v-faq-item" onClick={() => toggleFaq(idx)}>
