@@ -13,35 +13,49 @@ import WithdrawalHistory from './withdrawHistory';
 import RechargeHistory from './RechargeHistory';
 import { getUserData } from './api';
 
-// import your getUserData
-// import { getUserData } from './yourFile';
-
 export default function App() {
 
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true); // ✅ NEW
 
   useEffect(() => {
     const loadUser = async () => {
-      const userData = await getUserData();
-      setUser(userData);
+      try {
+        const userData = await getUserData();
+        console.log(userData);
+        setUser(userData);
+      } catch (err) {
+        console.log(err);
+      } finally {
+        setLoading(false); // ✅ stop loading AFTER response
+      }
     };
     loadUser();
   }, []);
+
+  // ✅ Wait until user check finishes
+  if (loading) {
+    return (
+      <div style={{
+        height: "100vh",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center"
+      }}>
+        Loading...
+      </div>
+    );
+  }
 
   return (
     <Router>
       <Routes>
 
-        {/* If NOT logged in → always go to auth */}
-        {!user && (
-          <>
-            <Route path="/auth" element={<Login_register_forget />} />
-            <Route path="*" element={<Navigate to="/auth" replace />} />
-          </>
-        )}
+        {/* NOT logged in */}
+      
 
-        {/* If logged in → allow everything */}
-        {user && (
+        {/* Logged in */}
+        {user._id && (
           <>
             <Route path="/Market" element={<ProductScreen />} />
             <Route path="/" element={<Home />} />
@@ -54,7 +68,12 @@ export default function App() {
             <Route path="/pay" element={<Pay />} />
           </>
         )}
-
+  {!user._id && (
+          <>
+            <Route path="/auth" element={<Login_register_forget />} />
+            <Route path="*" element={<Navigate to="/auth" replace />} />
+          </>
+        )}
       </Routes>
     </Router>
   );

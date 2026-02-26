@@ -12,7 +12,7 @@ import {
 import Navigation from "./components/Navigation";
 import { Footer } from "./components/footer";
 import { useNavigate } from "react-router-dom";
-import { fetchUserData, getUserData, getUserInfo, sellProduct } from "./api";
+import { fetchUserPurchaseAndAccount_dataData, getUserData, getUserInfo, sellProduct } from "./api";
 import AssetPerformanceList from "./AssetPerformanceList";
 
 const Account = () => {
@@ -64,7 +64,7 @@ console.log(userRes.data.user.withdrawHistory)
 
       });
 
-      const purchaseRes = await fetchUserData(data._id);
+      const purchaseRes = await fetchUserPurchaseAndAccount_dataData(data._id);
        setSoldStock(purchaseRes.soldStockHistory||[]);
       setpurchasesWithStock(purchaseRes?.purchases || []);
     } catch (err) {
@@ -88,7 +88,7 @@ console.log(userRes.data.user.withdrawHistory)
     userdata();
   }, []);
 
-  const handleBuy = async (asset, units) => {
+  const handleBuy = async (asset, units,unitPrice) => {
     if (!isLoggedIn || !userData?._id) {
       showToast("Please login first");
       navigate("/login");
@@ -108,6 +108,7 @@ console.log(userRes.data.user.withdrawHistory)
         leftStockUnits: asset.leftStockUnits,
         stockId: asset.stockId,
         units,
+        unitPrice,
         userId: userData._id,
       });
 

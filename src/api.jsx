@@ -5,10 +5,10 @@ import Cookies from "js-cookie";
 import CryptoJS from "crypto-js";
 import pako from "pako";
 
-export const API_BASE_URL = "https://tradingback.online/";
-export const API_BASE_URL2 = "https://tradingback.online";
-// export const API_BASE_URL = "http://localhost:5004/";
-// export const API_BASE_URL2 = "http://localhost:5004";
+// export const API_BASE_URL = "https://tradingback.online/";
+// export const API_BASE_URL2 = "https://tradingback.online";
+export const API_BASE_URL = "http://localhost:5004/";
+export const API_BASE_URL2 = "http://localhost:5004";
 
 
 
@@ -212,15 +212,29 @@ export const qRrandom = async () => {
 export const buyProduct = async (payload) => {
   const token = gettoken();
   console.log(token);
-
   if (token) {
     const data = await getUserData();
 
     payload.userId = data._id;
+    payload.token = token;
     console.log(payload);
   }
+try {
   const res = await axios.post(`${API_BASE_URL}QR/api/buy-stock`, payload);
-  return res;
+  
+  // Success (Status 200-299)
+  console.log("Status Code:", res.status);
+  alert(` ${res.data.message || "Purchase successful"}`);
+  
+} catch (error) {
+  // Error (Status 400, 401, 404, 500, etc.)
+  const statusCode = error.response ? error.response.status : "Network Error";
+  const errorMessage = error.response?.data?.message || error.message;
+
+  console.log("Status Code:", statusCode);
+  alert(` ${errorMessage}`);
+}
+
 };
 
 export const sellProduct = async (payload) => {
@@ -228,7 +242,7 @@ export const sellProduct = async (payload) => {
   return res;
 };
 
-export const fetchUserData = async (userId) => {
+export const fetchUserPurchaseAndAccount_dataData = async (userId) => {
   try {
     const [accountRes, purchaseRes] = await Promise.all([
       axios.get(`${API_BASE_URL}api/users/account_data`, {
@@ -240,7 +254,7 @@ export const fetchUserData = async (userId) => {
     ]);
 
     let updatedData = {};
-
+console.log(purchaseRes?.data?.data?.purchasesWithStock);
     if (accountRes?.data?.success) {
       updatedData = {
         accountData: accountRes.data.data,

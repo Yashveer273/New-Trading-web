@@ -1,23 +1,24 @@
 import { Minus, Plus, TrendingDown, TrendingUp } from "lucide-react";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
+
 const InvestmentCard = ({ stock, onBuy }) => {
   const [qty, setQty] = useState(1);
   const [buying, setBuying] = useState(false);
 
-const handleExecute = async () => { 
-  setBuying(true);
-  try {
-    await onBuy(stock, qty);
-  } catch (error) {
-    console.error(error);
-  } finally {
-    setBuying(false); 
-  }
-};
+  const handleExecute = async () => {
+    setBuying(true);
+    try {
+      await onBuy(stock, qty);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setBuying(false);
+    }
+  };
 
   /* ✅ DB FIELDS */
-  const symbol = stock?.symbol || "";
+  const symbol = stock?.name || "";
   const name = stock?.companyName || "";
   const price = Number(stock?.currentPrice) || 0;
   const changePercent = Number(stock?.priceChangePercent) || 0;
@@ -30,6 +31,7 @@ const handleExecute = async () => {
   const isDown = trend === "DOWN";
   const isNeutral = trend === "NO_CHANGE";
 
+  // This color will now apply to both the badges and the main price text
   const changeColor = isUp ? "#10b981" : isDown ? "#ef4444" : "#cbd5e1";
 
   return (
@@ -91,8 +93,9 @@ const handleExecute = async () => {
           style={{
             fontSize: "24px",
             fontWeight: 900,
-            color: "white",
+            color: changeColor, // Changed from "white" to changeColor
             lineHeight: 1,
+            transition: "color 0.3s ease", // Smooth transition when color changes
           }}
         >
           ₹{price.toLocaleString("en-IN", { minimumFractionDigits: 2 })}
@@ -102,14 +105,15 @@ const handleExecute = async () => {
           <span
             style={{ color: changeColor, fontSize: "13px", fontWeight: 800 }}
           >
-            {changeValue > 0 ? "+" : ""}₹{changeValue.toFixed(2)}
+            {/* Logic to show + for up and - for down correctly */}
+            {isUp ? "+" : isDown ? "-" : ""}₹{Math.abs(changeValue).toFixed(2)}
           </span>
 
           <span
             style={{ color: changeColor, fontSize: "13px", fontWeight: 800 }}
           >
-            ({changePercent > 0 ? "+" : ""}
-            {changePercent.toFixed(2)}%)
+            ({isUp ? "+" : isDown ? "-" : ""}
+            {Math.abs(changePercent).toFixed(2)}%)
           </span>
         </div>
 
@@ -131,28 +135,24 @@ const handleExecute = async () => {
         }}
       >
         <div>
-          <p className="label-xs">Order Quantity</p>
-          <p style={{ fontSize: "10px", color: "#475569", fontWeight: 700 }}>
+          <p className="label-xs" style={{ fontSize: "11px", fontWeight: "bold", margin: 0 }}>Order Quantity</p>
+          <p style={{ fontSize: "10px", color: "#475569", fontWeight: 700, margin: 0 }}>
             Limit: 50 Units
           </p>
         </div>
 
-        <div className="qty-control" style={{ alignItems: "center" }}>
+        <div className="qty-control" style={{ display: "flex", alignItems: "center", gap: "10px" }}>
           <button
-            className="qty-btn"
-            style={{
-              background: "#2563eb",
-              display: "grid",
-              justifyContent: "center",
-            }}
+           className="unit-btn border-r"
+            
             onClick={() => setQty(Math.max(1, qty - 1))}
           >
-            <Minus size={18} strokeWidth={3} />
+            <Minus size={16} strokeWidth={3} />
           </button>
 
           <span
             style={{
-              width: "50px",
+              width: "30px",
               textAlign: "center",
               fontWeight: 900,
               fontSize: "18px",
@@ -163,44 +163,51 @@ const handleExecute = async () => {
           </span>
 
           <button
-            className="qty-btn"
-            style={{
-              background: "#2563eb",
-              display: "grid",
-              justifyContent: "center",
-            }}
+            className="unit-btn border-l"
             onClick={() => setQty(Math.min(50, qty + 1))}
           >
-            <Plus size={18} strokeWidth={3} />
+            <Plus size={16} strokeWidth={3} />
           </button>
         </div>
       </div>
 
       {/* PAYABLE */}
-      <div className="payable-summary">
-        <p className="label-xs" style={{ color: "#3b82f6" }}>
+      <div className="payable-summary" style={{ background: "#1e293b", padding: "12px", borderRadius: "8px", marginBottom: "15px" }}>
+        <p className="label-xs" style={{ color: "#3b82f6", fontSize: "11px", fontWeight: "bold", marginBottom: "4px" }}>
           Total Payable
         </p>
-        <p style={{ fontSize: "24px", fontWeight: 900, color: "white" }}>
+        <p style={{ fontSize: "24px", fontWeight: 900, color: "white", margin: 0 }}>
           ₹{(qty * price).toLocaleString("en-IN", { minimumFractionDigits: 2 })}
         </p>
       </div>
+
       {buying ? (
         <LoaderStatusButton loading={buying} text="Processing" />
       ) : (
-        <button className="execute-btn" onClick={handleExecute}>
+        <button 
+          className="execute-btn" 
+          onClick={handleExecute}
+          style={{
+            width: "100%",
+            padding: "12px",
+            background: "#2563eb",
+            color: "white",
+            border: "none",
+            borderRadius: "8px",
+            fontWeight: "bold",
+            cursor: "pointer"
+          }}
+        >
           EXECUTE BUY
         </button>
       )}
-
-      {/* EXECUTE */}
     </div>
   );
 };
 
 export default InvestmentCard;
 
-const LoaderStatusButton = ({ loading, text = "Submit" }) => {
+const LoaderStatusButton = ({  text = "Submit" }) => {
   return (
     <>
       <style>{`
@@ -218,32 +225,18 @@ const LoaderStatusButton = ({ loading, text = "Submit" }) => {
           background: #2563eb;
           color: white;
         }
-
-        .ls-btn.blocked {
-          opacity: 0.6;
-          cursor: not-allowed;
-          pointer-events: none;
-        }
-
         .spin {
           animation: spin 1s linear infinite;
         }
-
         @keyframes spin {
           from { transform: rotate(0deg); }
           to { transform: rotate(360deg); }
         }
       `}</style>
 
-      <button className={`ls-btn ${!loading ? "blocked" : ""}`}>
-        {loading ? (
-          <>
-            <Loader2 size={18} className="spin" />
-            Loading...
-          </>
-        ) : (
-          text
-        )}
+      <button className="ls-btn" disabled>
+        <Loader2 size={18} className="spin" />
+        {text}...
       </button>
     </>
   );

@@ -1,18 +1,20 @@
-import React, { useEffect, useState } from "react";
-import {
-  Search,
-  Activity,
-  Wallet,
-  ShieldCheck,
-  BarChart3,
-  Award,
-  Lock,
-} from "lucide-react";
+import React, { useEffect, useState, useMemo } from "react";
+import { firestore } from "./firebaseCon";
+import { Search, Activity, BarChart3, Award, Lock } from "lucide-react";
 import "./styles/productscreen.css";
 import Navigation from "./components/Navigation";
 import InvestmentCard from "./components/InvestmentCard";
 import { Footer } from "./components/footer";
-import { buyProduct,  fetchStocks, get_by_id_Stock } from "./api";
+import { buyProduct } from "./api";
+import { collection, onSnapshot } from "firebase/firestore";
+
+/**
+ * Helper: Generates a completely random jump within boundaries
+ */
+const calculateRandomJump = (min, max) => {
+  const range = max - min;
+  return Number((min + Math.random() * range).toFixed(2));
+};
 
 const MarketTicker = () => {
   const items = [
@@ -29,13 +31,7 @@ const MarketTicker = () => {
           <div key={i} className="ticker-item">
             <span style={{ color: "white" }}>{item.s}</span>
             <span>{item.v}</span>
-            <span
-              style={{
-                color: item.c.startsWith("+")
-                  ? "var(--success)"
-                  : "var(--danger)",
-              }}
-            >
+            <span style={{ color: item.c.startsWith("+") ? "var(--success)" : "var(--danger)" }}>
               {item.c}
             </span>
           </div>
@@ -44,162 +40,146 @@ const MarketTicker = () => {
     </div>
   );
 };
+
 const ProductScreen = () => {
   const [search, setSearch] = useState("");
-
-
   const [stocks, setStocks] = useState([]);
   const [status, setStatus] = useState(false);
 
-  const updateStockInState = (updatedStock) => {
-    setStocks((prev) =>
-      prev.map((s) =>
-        s._id === updatedStock._id ? { ...s, ...updatedStock } : s,
-      ),
-    );
-  };
-
+  // 1. Initial Fetch from Firestore
   useEffect(() => {
-    const fetchStocksFromAPI = async () => {
-      const data = await fetchStocks();
-      console.log(data.products);
-      setStocks(data.products);
-    };
-    fetchStocksFromAPI();
+    const unsubscribe = onSnapshot(collection(firestore, "Stock"), (snapshot) => {
+      const data = snapshot.docs.map((doc) => {
+        const d = doc.data();
+        return {
+          _id: doc.id,
+          ...d,
+          // Initialize live price
+          currentPrice: d.currentPrice || d.minPrice || 0,
+          trend: "NO_CHANGE"
+        };
+      });
+      setStocks(data);
+    });
+    return () => unsubscribe();
   }, []);
+
+  // 2. High-Quality Master Fluctuation Engine
+  // One interval handles ALL products to save CPU/Memory
+  useEffect(() => {
+    if (stocks.length === 0) return;
+
+    const masterHeartbeat = setInterval(() => {
+      setStocks((currentStocks) =>
+        currentStocks.map((s) => {
+          const min = Number(s.minPrice || 0);
+          const max = Number(s.maxPrice || 100);
+          
+          const nextPrice = calculateRandomJump(min, max);
+          const trend = nextPrice > s.currentPrice ? "UP" : "DOWN";
+
+          return {
+            ...s,
+            currentPrice: nextPrice,
+            trend: trend,
+            // Calculate percentage based on initial min price
+            priceChangePercent: min !== 0 ? ((nextPrice - min) / min) * 100 : 0,
+          };
+        })
+      );
+    }, 3000); // Global jump every 3 seconds
+
+    return () => clearInterval(masterHeartbeat);
+  }, [stocks.length > 0]); 
+
+  // 3. Optimized Search Filtering
+  const filteredStocks = useMemo(() => {
+    const query = search.toLowerCase();
+    return stocks.filter(
+      (s) =>
+        s.name?.toLowerCase().includes(query) ||
+        s.companyName?.toLowerCase().includes(query)
+    );
+  }, [stocks, search]);
 
   const handleBuy = async (stock, qty) => {
     try {
       setStatus(true);
-      const latestStock = await get_by_id_Stock(stock._id);
-      if (latestStock.success) {
-        const totalCost = latestStock.product.currentPrice * qty;
-        
-        console.log(totalCost);
-      
-        updateStockInState(latestStock.product);
-        await buyProduct({ stockId:stock._id, quantity:qty});
-      } else {
-        throw new Error(latestStock);
-      }
+      await buyProduct({ 
+        stockId: stock._id, 
+        quantity: qty, 
+        currentPrice: stock.currentPrice 
+      });
     } catch (err) {
-      console.error("❌ Buy failed", err);
-      throw err;
-    }finally{
+      console.error("❌ Transaction Error:", err);
+    } finally {
       setStatus(false);
     }
   };
 
   return (
-    <>
+    <div className="product-screen-root">
       <Navigation />
       <MarketTicker />
 
-
       <header className="header-section">
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "8px",
-            marginBottom: "8px",
-          }}
-        >
+        <div className="terminal-status">
           <Activity size={16} color="#2563eb" />
-          <span
-            className="label-xs"
-            style={{ color: "#2563eb", letterSpacing: "2px", marginBottom: 0 }}
-          >
-            Terminal Live
-          </span>
+          <span className="label-xs">Terminal Live</span>
         </div>
-        <h1
-          style={{
-            fontSize: "48px",
-            fontWeight: 900,
-            fontStyle: "italic",
-            textTransform: "uppercase",
-            margin: 0,
-            color: "white",
-            letterSpacing: "-1px",
-          }}
-        >
-          Equities
-        </h1>
+        
+        <h1 className="main-title">Equities</h1>
 
-        <div
-          style={{ position: "relative", maxWidth: "500px", marginTop: "24px" }}
-        >
-          <Search
-            style={{
-              position: "absolute",
-              left: "16px",
-              top: "50%",
-              transform: "translateY(-50%)",
-              color: "#64748b",
-            }}
-            size={20}
-          />
+        <div className="search-container">
+          <Search className="search-icon" size={20} />
           <input
             className="search-input"
-            placeholder="Search by ticker symbol..."
+            placeholder="Search by ticker or company..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
       </header>
 
-      <div className="market-grid">
-        {Array.isArray(stocks) && stocks.length > 0 ? (
-          stocks.map((s) => (
+      <main className="market-grid">
+        {filteredStocks.length > 0 ? (
+          filteredStocks.map((s) => (
             <InvestmentCard
-              key={s._id || s.symbol}
+              key={s._id}
               stock={s}
               onBuy={handleBuy}
               Status={status}
             />
           ))
         ) : (
-          <div
-            style={{
-              padding: "40px",
-              textAlign: "center",
-              color: "#94a3b8",
-              fontWeight: 600,
-            }}
-          >
-            No Stocks Available
+          <div className="empty-state">
+            {stocks.length === 0 
+              ? "Establishing Secure Connection..." 
+              : "No matches found for your search."}
           </div>
         )}
-      </div>
+      </main>
+
       <section className="trust-grid">
         <div className="trust-card">
-          <Lock className="stat-icon" style={{ margin: "0 auto" }} />
+          <Lock className="stat-icon" />
           <h4>Zero-Knowledge Security</h4>
-          <p>
-            Your assets are protected by enterprise-grade cold storage and
-            multi-sig protocols.
-          </p>
+          <p>Assets protected by enterprise-grade cold storage.</p>
         </div>
         <div className="trust-card">
-          <BarChart3 className="stat-icon" style={{ margin: "0 auto" }} />
+          <BarChart3 className="stat-icon" />
           <h4>High-Frequency Engine</h4>
-          <p>
-            Execute orders with sub-millisecond latency via our direct market
-            access nodes.
-          </p>
+          <p>Sub-millisecond latency order execution.</p>
         </div>
         <div className="trust-card">
-          <Award className="stat-icon" style={{ margin: "0 auto" }} />
+          <Award className="stat-icon" />
           <h4>Regulatory Compliance</h4>
-          <p>
-            Fully compliant with SEBI guidelines and NSE/BSE reporting
-            standards.
-          </p>
+          <p>Fully compliant with SEBI and exchange standards.</p>
         </div>
       </section>
+
       <Footer />
-    </>
+    </div>
   );
 };
 

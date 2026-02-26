@@ -8,7 +8,7 @@ import {
 import { Footer } from './components/footer';
 import './styles/home.css';
 import HomepageCard from './components/homepageCard';
-import { Link } from 'react-router-dom';
+
 import Navigation from './components/Navigation';
 // --- STYLING ---
 
